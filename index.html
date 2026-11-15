@@ -108,10 +108,10 @@ const relevantAirRoutes=[
  {from:'SGN',to:'BKK',label:'Ho Chi Minh City → Bangkok Suvarnabhumi',kind:'Direkt',tip:'Rekommenderat alternativ för återresa dag 28 om internationellt hemflyg går från BKK.',url:'https://www.google.com/travel/flights/flights-from-ho-chi-minh-city-to-bangkok.html'},
  {from:'SGN',to:'DMK',label:'Ho Chi Minh City → Bangkok Don Mueang',kind:'Direkt',tip:'Jämför lågprisflyg och inkludera bagage och transfer DMK–BKK om relevant.',url:'https://www.google.com/travel/flights/flights-from-ho-chi-minh-city-to-bangkok.html'}
 ];
-function flightCompareUrl(service,route){
- if(service==='google')return route.url;
- if(service==='kayak')return 'https://www.kayak.se/flights/'+route.from+'-'+route.to;
- return 'https://www.momondo.se/flight-search/'+route.from+'-'+route.to;
+function flightCompareUrl(service,route,date){
+ if(service==='google')return route.url; // Google Flights visar billigast-fliken; datum och passagerare väljs på sidan.
+ if(service==='kayak')return 'https://www.kayak.se/flights/'+route.from+'-'+route.to+'/'+(date||'2027-02-15')+'/2adults?sort=price_a';
+ return 'https://www.momondo.se/flights'; // Säker ingång: Momondo-url med förifyllda parametrar har tidigare fungerat dåligt.
 }
 function flightCompareContent(route){
  const wrap=document.createElement('div');wrap.className='flightPopup';
@@ -120,10 +120,12 @@ function flightCompareContent(route){
  const para=document.createElement('p');para.className='flightAdvice';para.textContent='Jämför billigaste TOTALPRIS för 2 vuxna + 1 incheckad väska per person (ca 20 kg vardera). Välj detta på bokningssidan – bagagefilter överförs inte automatiskt. Inga livepriser hämtas i appen.';wrap.append(para);
  const dateRow=document.createElement('label');dateRow.textContent='Avresedatum i februari 2027';dateRow.style.display='block';
  const d=document.createElement('input');d.type='date';d.value=route.from==='SGN'?'2027-02-27':'2027-02-15';d.min='2027-01-30';d.max='2027-03-02';d.style.margin='6px 0';d.setAttribute('aria-label','Välj datum för flygsökning');dateRow.append(d);wrap.append(dateRow);
- const dateHint=document.createElement('small');dateHint.textContent='Välj samma datum manuellt på jämförelsesidan. Söklänkarna garanterar inte att datum eller antal passagerare förifylls.';wrap.append(dateHint);
+ const dateHint=document.createElement('small');dateHint.textContent='KAYAK-länken öppnar vald dag, 2 vuxna och sortering billigast först. Momondo och Google Flights kan kräva manuellt datum och 2 vuxna. Incheckat bagage (1 väska per person) måste läggas till eller verifieras hos flygbolaget.';wrap.append(dateHint);
  const choices=document.createElement('div');choices.className='flightLinks';
- [['🔎 Google Flights – billigast','google'],['💸 Momondo – jämför','momondo'],['✈️ KAYAK – jämför','kayak']].forEach(([label,source])=>{
-  const a=document.createElement('a');a.className='btn';a.href=flightCompareUrl(source,route);a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;choices.append(a)
+ [['🔎 Google Flights – billigast','google'],['💸 Momondo – jämför','momondo'],['✈️ KAYAK – billigast först · 2 vuxna','kayak']].forEach(([label,source])=>{
+  const a=document.createElement('a');a.className='btn';a.href=flightCompareUrl(source,route,d.value);a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;
+  if(source==='kayak'){d.addEventListener('change',()=>{a.href=flightCompareUrl(source,route,d.value)})}
+  choices.append(a)
  });wrap.append(choices);
  const note=document.createElement('p');note.className='flightAdvice';note.textContent='Jämför alltid slutpriset inklusive 2 incheckade väskor, skatter, betalavgifter och eventuell transfer till rätt flygplats.';wrap.append(note);
  return wrap;
