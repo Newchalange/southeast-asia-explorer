@@ -83,7 +83,7 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator('.chat-result').count(),2,'unknown IDs are ignored');
       assert.ok(await page.locator('.chat-result-pin').count()>=1);
       const first=bodies[0];
-      assert.equal(first.v,1);assert.equal(first.catalog.length,264);assert.equal(first.query,'Var kan jag snorkla med barn?');
+      assert.equal(first.v,1);assert.equal(first.catalog.length,await page.evaluate(()=>places.length+hotelCandidates.length));assert.equal(first.query,'Var kan jag snorkla med barn?');
       assert.deepEqual(first.previous.ids.length>0,true,'previous local results are context');
       assert.ok(!/vn2_|sea\d+_|days/.test(JSON.stringify(first)),'no storage or plan is sent');
       await page.locator('.chat-result .row button').nth(1).click();

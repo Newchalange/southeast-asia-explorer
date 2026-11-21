@@ -6,7 +6,7 @@ const engine=require('../chat-engine.js');
 const {scripts,data,items}=require('./catalog.cjs');
 const search=(q,extra={})=>engine.search(q,{items,...extra});
 test('All existing inline and new JavaScript parses',()=>{scripts.forEach(s=>new vm.Script(s));for(const file of ['chat-engine.js','chat-ai.js','chat-ui.js'])new vm.Script(fs.readFileSync(require.resolve('../'+file),'utf8'));});
-test('Catalog preserves 220 places and 44 hotels with unique IDs and coordinates',()=>{assert.equal(data.places.length,220);assert.equal(data.hotelCandidates.length,44);assert.equal(new Set(items.map(p=>p.id)).size,264);assert.ok(items.every(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)));});
+test('Catalog preserves 247 places and 44 hotels with unique IDs and coordinates',()=>{assert.equal(data.places.length,247);assert.equal(data.hotelCandidates.length,44);assert.equal(new Set(items.map(p=>p.id)).size,291);assert.ok(items.every(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)));});
 test('Swedish region and category are combined',()=>{const r=search('Visa stränder i östra Thailand');assert.ok(r.items.length);assert.ok(r.items.every(p=>p.region==='Östra Thailand'||p.country==='Thailand'&&p.type==='hotel'));assert.ok(r.items.every(p=>p.category==='Strand'));});
 test('Vietnam region aliases and multiple categories',()=>{const r=search('Natur och stränder i norra Vietnam');assert.ok(r.items.length);assert.ok(r.items.every(p=>p.region==='Norr'&&['Natur','Strand'].includes(p.category)));});
 test('Hotel names and areas',()=>{assert.equal(search('ibis Bangkok Riverside').items[0].name,'ibis Bangkok Riverside');const r=search('Hotell på Koh Chang');assert.ok(r.items.length);assert.ok(r.items.every(p=>p.type==='hotel'&&p.region==='Koh Chang'));});

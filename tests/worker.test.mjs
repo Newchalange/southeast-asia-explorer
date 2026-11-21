@@ -27,7 +27,7 @@ async function call(request, e) {
 }
 
 test('Real catalog fits the worker limits and the prompt stays compact', () => {
-  assert.equal(payload.catalog.length, 264);
+  assert.equal(payload.catalog.length, items.length);
   assert.ok(JSON.stringify(payload).length < 40 * 1024);
   const prompt = systemPrompt(payload.catalog.map(([id, name, region, group, country, category, note]) => ({ id, name, region, group, country, category, note })));
   assert.ok(prompt.length < 24000, 'prompt ' + prompt.length);

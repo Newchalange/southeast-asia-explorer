@@ -89,7 +89,7 @@ test('Clearing the chat aborts the request without a fallback answer',async()=>{
 });
 
 test('Only https endpoints (or local test servers) are accepted',()=>{
-  assert.equal(ai.ENDPOINT,'');
+  assert.equal(ai.ENDPOINT,'https://reseguide-ai.andersmarieresa.workers.dev/api/travel-chat');
   for(const bad of ['','http://example.com/api','javascript:alert(1)','https://','ftp://x/y']) assert.equal(ai.createAIProvider({endpoint:bad,local,fetch:async()=>{}}),null);
   assert.ok(ai.createAIProvider({endpoint:'http://127.0.0.1:8787/api/travel-chat',local,fetch:async()=>{}}));
 });

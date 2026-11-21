@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   // Address of the deployed Cloudflare Worker. Empty = AI mode is not offered.
-  const DEFAULT_ENDPOINT = '';
+  const DEFAULT_ENDPOINT = 'https://reseguide-ai.andersmarieresa.workers.dev/api/travel-chat';
   const TIMEOUT_MS = 35000;
   const MAX_IDS = 8;
   const MAX_PREVIOUS_IDS = 12;

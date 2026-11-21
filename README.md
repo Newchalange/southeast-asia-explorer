@@ -30,7 +30,8 @@ node test-live.mjs https://reseguide-ai.<ditt-namn>.workers.dev
 ```
 
 Lägg sedan in adressen `https://reseguide-ai.<ditt-namn>.workers.dev/api/travel-chat`
-i `DEFAULT_ENDPOINT` överst i `chat-ai.js`. Är `DEFAULT_ENDPOINT` tom visas inget AI-val.
+i `DEFAULT_ENDPOINT` överst i `chat-ai.js` (nu `https://reseguide-ai.andersmarieresa.workers.dev/api/travel-chat`).
+Är `DEFAULT_ENDPOINT` tom visas inget AI-val.
 Tillåtna webbplatser styrs av `ALLOWED_ORIGINS` i `ai-worker/wrangler.toml`
 (standard `https://newchalange.github.io`). Där kan även `MODEL` bytas, t.ex. till
 `@cf/google/gemma-4-26b-a4b-it` som räcker till fler frågor per dygn.
@@ -38,7 +39,7 @@ Tillåtna webbplatser styrs av `ALLOWED_ORIGINS` i `ai-worker/wrangler.toml`
 ## Lokal kartassistent (sedan version 14)
 
 Öppna **Kartassistent · gratis** under reseintroduktionen. Den söker lokalt bland
-220 platser och 44 hotellkandidater, utan AI-modell, konto, API eller API-avgift.
+247 platser och 44 hotellkandidater, utan AI-modell, konto, API eller API-avgift.
 
 - `Stränder i östra Thailand` kombinerar kategori och region.
 - `Hotell på Koh Chang` söker hotellkandidater.
