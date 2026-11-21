@@ -1,8 +1,41 @@
 # Southeast Asia Explorer
 
-Interaktiv reseguide för Thailand, Kambodja och Vietnam. Version 14.0.
+Interaktiv reseguide för Thailand, Kambodja och Vietnam. Version 15.0.
 
-## Kartassistent i version 14
+## Gratis AI-assistent i version 15
+
+Kartassistenten kan nu svara med en riktig AI-modell. Kryssa i **Använd riktig AI
+(gratis)** i chatten. Valet sparas på enheten (`sea15_chat_ai`). Utan kryss fungerar
+allt som i version 14.
+
+- AI:n svarar fritt på svenska (upplägg, resvägar, säsong, mat) och föreslår platser
+  och hotell ur appens katalog, som visas som gula nålar och resultatkort.
+- Den körs på **Cloudflare Workers AI** via en egen liten worker i `ai-worker/`.
+  Ingen API-nyckel behövs. Gratisplanen ger 10 000 neuroner per dygn, ungefär
+  50 frågor med standardmodellen Llama 3.3 70B. När kvoten är slut, vid fel eller
+  efter 35 sekunder visas den lokala sökningen i stället. Gratisplanen debiterar inget.
+- Endast frågan, föregående fråga/träffar och den publika katalogen skickas.
+  Favoriter, resplan och övrig lagring lämnar inte enheten. Dolda objekt utelämnas ur
+  katalogen och favoritfrågor filtreras lokalt. Svaret visas alltid som text och bara kända katalog-ID:n visas.
+- AI kan ta fel. Pris, lediga rum, tider och faciliteter är aldrig verifierade.
+
+### Driftsätta AI-workern
+
+Kräver Node.js och ett gratis Cloudflare-konto. Kör i mappen `ai-worker`:
+
+```sh
+npx --yes wrangler login
+npx --yes wrangler deploy
+node test-live.mjs https://reseguide-ai.<ditt-namn>.workers.dev
+```
+
+Lägg sedan in adressen `https://reseguide-ai.<ditt-namn>.workers.dev/api/travel-chat`
+i `DEFAULT_ENDPOINT` överst i `chat-ai.js`. Är `DEFAULT_ENDPOINT` tom visas inget AI-val.
+Tillåtna webbplatser styrs av `ALLOWED_ORIGINS` i `ai-worker/wrangler.toml`
+(standard `https://newchalange.github.io`). Där kan även `MODEL` bytas, t.ex. till
+`@cf/google/gemma-4-26b-a4b-it` som räcker till fler frågor per dygn.
+
+## Lokal kartassistent (sedan version 14)
 
 Öppna **Kartassistent · gratis** under reseintroduktionen. Den söker lokalt bland
 220 platser och 44 hotellkandidater, utan AI-modell, konto, API eller API-avgift.
@@ -30,7 +63,8 @@ kart- och bildtjänster kräver fortfarande internet.
 ## Utveckling och tester
 
 Webbappen är statisk och kräver inget byggsteg. Behåll `chat-engine.js`,
-`chat-ui.js` och `chat.css` intill `index.html` vid publicering.
+`chat-ai.js`, `chat-ui.js` och `chat.css` intill `index.html` vid publicering.
+Mappen `ai-worker/` driftsätts separat och påverkar inte GitHub Pages.
 
 ```sh
 npm ci
@@ -39,13 +73,17 @@ npm run test:browser
 ```
 
 Söktesterna använder den verkliga katalogen och kontrollerar även JavaScript-syntax.
+AI-testerna kör workern och klientens AI-läge mot en simulerad modell: origin, storlek,
+hastighetsgränser, kvot, okända ID:n, favoriter lokalt och reserv till lokal sökning.
 Webbläsartesterna använder lokalt installerad Microsoft Edge i dolt läge och
 internet för Leaflet. De testar 1280, 390 och 320 pixlars bredd, kartzoom,
 hotellgruppering, favoriter, dolda objekt, flikar, flyglager, bevarad resplan,
 textinjektion och sökning när kartbiblioteket inte är tillgängligt.
+Webbläsartestet täcker även AI-läget mot en simulerad endpoint. Utan Edge eller
+CDN-åtkomst: `PW_CHANNEL=chrome` och `UNPKG_DIR=<mapp med leaflet@1.9.4/...>`.
 Skärmbilder skrivs till ignorerade `test-results/`.
 
-Arkitekturen för en framtida serverbaserad AI finns i [CHAT-ARCHITECTURE.md](CHAT-ARCHITECTURE.md).
+Arkitekturen för chatten och AI-workern finns i [CHAT-ARCHITECTURE.md](CHAT-ARCHITECTURE.md).
 
 ## Publicera med GitHub Pages
 1. Skapa ett **nytt offentligt repository** (t.ex. `southeast-asia-explorer`) på GitHub. Använd inte repot för tradingboten.

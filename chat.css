@@ -6,3 +6,7 @@
 .chat-results{max-height:280px;overflow:auto;margin:10px 0}.chat-result{border-top:1px solid var(--edge);padding:9px 0;overflow-wrap:anywhere}.chat-result small{display:block;color:var(--muted);margin:5px 0}.chat-result .row{gap:5px}
 .chat-panel :focus-visible{outline:3px solid var(--gold);outline-offset:2px}.chat-result-pin{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#fff0b5;color:#392300;border:3px solid #a34d00;font-weight:800;box-shadow:0 0 0 4px #ffca5766}.chat-map-status{position:absolute;bottom:24px;left:10px;z-index:650;max-width:calc(100% - 20px);background:#102534ef;padding:6px 10px;border:1px solid var(--gold);border-radius:9px;pointer-events:none}
 @media(max-width:800px){.chat-panel{scroll-margin-top:10px}.chat-results{max-height:240px}.chat-panel form{flex-wrap:wrap}.chat-field{flex-basis:200px}.chat-panel form>.btn{flex-grow:1}.chat-map-status{font-size:12px;bottom:65px}.mapwrap{min-height:340px}}
+.chat-log p{white-space:pre-line}.chat-log p.chat-user{background:#24404f}.chat-log p.chat-ai{border-left:3px solid #65e7c1}.chat-log p.pending{opacity:.75;font-style:italic}
+.chat-panel .chat-ai-toggle{display:flex;align-items:center;gap:10px;min-height:44px;margin:8px 0 0;color:var(--txt);font-weight:650;cursor:pointer}
+.chat-panel .chat-ai-toggle input{width:22px;height:22px;min-height:0;padding:0;flex:none;accent-color:#65e7c1}
+.chat-panel.ai-on .chat-log{max-height:280px}

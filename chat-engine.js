@@ -18,6 +18,16 @@
       ...hotels.map(h => ({id:'hotel:'+h[0]+'::'+h[1], sourceId:h[1], type:'hotel', name:h[1], region:h[0], regionGroup:country(h[0])==='Thailand'?(h[0]==='Bangkok'?'Bangkok':'Östra Thailand'):country(h[0])==='Kambodja'?'Södra Kambodja':'Söder', country:country(h[0]), category:h[3].includes('strand')?'Strand':h[3]==='natur'?'Natur':'', description:h[2], lat:coords[h[0]]?.[0], lon:coords[h[0]]?.[1], approximate:true}))
     ];
   }
+  // Shared filter for the local parser and for validated server-provider filters.
+  function filterItems(items, intent, {favorites = new Set(), hidden = new Set()} = {}) {
+    const types=intent.types||[], regions=intent.regions||[], categories=intent.categories||[], terms=intent.terms||[];
+    return items.filter(p=>!hidden.has(p.id)
+      && (!types.length||types.includes(p.type))
+      && (!regions.length||regions.some(r=>p.region===r||p.regionGroup===r||p.country===r||contains(normalize(p.name+' '+p.description),normalize(r))))
+      && (!categories.length||categories.includes(p.category))
+      && (!intent.favoritesOnly||favorites.has(p.id))
+      && terms.every(w=>contains(normalize(p.name+' '+p.region+' '+p.description),w)));
+  }
   function search(query, context) {
     const {items, favorites = new Set(), hidden = new Set(), previous} = context;
     let text = normalize(query).slice(0, 500);
@@ -52,12 +62,7 @@
     if(terms.length || !followup) intent.terms=terms;
     const constraints=intent.regions.length||intent.categories.length||intent.types.length||intent.favoritesOnly||intent.terms.length||contains(normalize(query),'alla');
     if(!constraints) return {items:[], intent:null, message:help};
-    const results=items.filter(p=>!hidden.has(p.id)
-      && (!intent.types.length||intent.types.includes(p.type))
-      && (!intent.regions.length||intent.regions.some(r=>p.region===r||p.regionGroup===r||p.country===r||contains(normalize(p.name+' '+p.description),normalize(r))))
-      && (!intent.categories.length||intent.categories.includes(p.category))
-      && (!intent.favoritesOnly||favorites.has(p.id))
-      && intent.terms.every(w=>contains(normalize(p.name+' '+p.region+' '+p.description),w)));
+    const results=filterItems(items,intent,{favorites,hidden});
     const selected=intent.limit?results.slice(0,intent.limit):results;
     const notes=[];
     if(price) notes.push('Jag kan inte filtrera på aktuellt pris, ledighet, AC eller badrum. Kandidaterna är inte bekräftade för dessa krav; kontrollera vald rumstyp på bokningssidan.');
@@ -65,9 +70,9 @@
     if(/\b(nara|finaste|basta|billigaste)\b/.test(normalize(query))) notes.push('Matchningen använder katalogens namn, områden och kategorier, inte avstånd eller kvalitetsranking.');
     return {items:selected,intent,total:results.length,message:(selected.length?`${selected.length} träffar${selected.length<results.length?' av '+results.length:''} i den lokala katalogen. `:'Inga träffar. Prova färre villkor eller ett annat ortsnamn. Dolda objekt tas inte med. ')+notes.join(' ')};
   }
-  // A future server provider must implement the same interface; UI resolves IDs locally.
+  // The server provider in chat-ai.js implements the same interface; UI resolves IDs locally.
   const createLocalProvider = () => ({async search(query, context){return search(query,context);}});
-  const api={normalize,catalog,search,createLocalProvider};
+  const api={normalize,catalog,search,filterItems,createLocalProvider};
   if(typeof module!=='undefined'&&module.exports) module.exports=api;
   else root.TravelChat=api;
 })(globalThis);

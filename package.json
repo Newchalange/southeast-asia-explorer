@@ -1,9 +1,9 @@
 {
   "name": "southeast-asia-explorer",
-  "version": "14.0.0",
+  "version": "15.0.0",
   "private": true,
   "scripts": {
-    "test": "node --test tests/chat.test.cjs",
+    "test": "node --test tests/chat.test.cjs tests/ai.test.cjs tests/worker.test.mjs",
     "test:browser": "node tests/browser.cjs"
   },
   "devDependencies": {

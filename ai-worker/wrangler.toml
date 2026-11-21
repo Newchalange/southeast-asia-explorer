@@ -1,0 +1,26 @@
+# Cloudflare Worker för reseguidens gratis AI-assistent (Workers AI, ingen API-nyckel).
+# Driftsätt från den här mappen:  npx --yes wrangler login   och sedan   npx --yes wrangler deploy
+name = "reseguide-ai"
+main = "worker.mjs"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[ai]
+binding = "AI"
+
+[vars]
+# Webbplatser som får anropa workern, kommaseparerade, utan avslutande snedstreck.
+ALLOWED_ORIGINS = "https://newchalange.github.io"
+MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+FALLBACK_MODEL = "@cf/google/gemma-4-26b-a4b-it"
+
+# Högst 6 frågor per minut och IP-adress, och 20 per minut totalt per Cloudflare-plats.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "7301"
+simple = { limit = 6, period = 60 }
+
+[[ratelimits]]
+name = "GLOBAL_LIMITER"
+namespace_id = "7302"
+simple = { limit = 20, period = 60 }
